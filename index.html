@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스</title>
+    <meta name="description" content="QuickPair에서 당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
+    <meta name="keywords" content="QuickPair, 술, 안주, 페어링, 소주, 맥주, 와인, 위스키, 칵테일">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.quickpair.com/">
+    <meta property="og:title" content="QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스">
+    <meta property="og:description" content="당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
+    <meta property="og:image" content="https://www.quickpair.com/og-image.jpg">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.quickpair.com/">
+    <meta property="twitter:title" content="QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스">
+    <meta property="twitter:description" content="당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
+    <meta property="twitter:image" content="https://www.quickpair.com/twitter-image.jpg">
+</head>
+<body>
+    <header>
+        <h1>QuickPair</h1>
+    </header>
+    <main>
+        <section id="input-section-1">
+            <label for="drinkType">술 종류:</label>
+            <select id="drinkType" name="drinkType">
+                <option value="소주">소주</option>
+                <option value="맥주">맥주</option>
+                <option value="와인">와인</option>
+                <option value="위스키">위스키</option>
+                <option value="칵테일">칵테일</option>
+                <option value="양주">양주</option>
+                <option value="사케">사케</option>
+            </select>
+        </section>
+
+        <section id="input-section-2">
+            <label for="mood">기분:</label>
+            <select id="mood" name="mood">
+                <option value="">선택하세요</option>
+                <option value="행복할 때">행복할 때</option>
+                <option value="슬플 때">슬플 때</option>
+                <option value="스트레스 받을 때">스트레스 받을 때</option>
+                <option value="기분 업할 때">기분 업할 때</option>
+                <option value="편안할 때">편안할 때</option>
+                <option value="피곤할 때">피곤할 때</option>
+                <option value="로맨틱할 때">로맨틱할 때</option>
+            </select>
+        </section>
+
+        <section id="input-section-3">
+            <label for="weather">날씨:</label>
+            <select id="weather" name="weather">
+                <option value="">선택하세요</option>
+                <option value="맑음">맑음</option>
+                <option value="흐림">흐림</option>
+                <option value="비 오는 날">비 오는 날</option>
+                <option value="눈 오는 날">눈 오는 날</option>
+                <option value="더운 날">더운 날</option>
+                <option value="추운 날">추운 날</option>
+                <option value="바람이 부는 날">바람이 부는 날</option>
+            </select>
+        </section>
+
+        <section id="input-section-4">
+            <label for="season">계절:</label>
+            <select id="season" name="season">
+                <option value="">선택하세요</option>
+                <option value="봄">봄</option>
+                <option value="여름">여름</option>
+                <option value="가을">가을</option>
+                <option value="겨울">겨울</option>
+            </select>
+        </section>
+
+        <section id="input-section-5">
+            <button type="button" onclick="recommendPairings()">빠른 추천 받기</button>
+        </section>
+
+        <section id="input-section-6">
+            <label for="timeOfDay">시간대:</label>
+            <select id="timeOfDay" name="timeOfDay">
+                <option value="">선택하세요</option>
+                <option value="아침">아침</option>
+                <option value="점심">점심</option>
+                <option value="저녁">저녁</option>
+                <option value="늦은 밤">늦은 밤</option>
+            </select>
+        </section>
+
+        <section id="input-section-7">
+            <label for="event">이벤트/상황:</label>
+            <select id="event" name="event">
+                <option value="">선택하세요</option>
+                <option value="파티">파티</option>
+                <option value="피크닉">피크닉</option>
+                <option value="데이트">데이트</option>
+                <option value="가족 모임">가족 모임</option>
+                <option value="혼자 있을 때">혼자 있을 때</option>
+                <option value="친구와 함께 있을 때">친구와 함께 있을 때</option>
+            </select>
+        </section>
+
+        <section id="input-section-8">
+            <textarea id="whisper" name="whisper" rows="4" cols="50" placeholder="여기에 귓속말을 입력하세요"></textarea>
+        </section>
+
+        <section id="input-section-9">
+            <label for="alcoholPreference">알코올 농도 선호:</label>
+            <select id="alcoholPreference" name="alcoholPreference">
+                <option value="">선택하세요</option>
+                <option value="낮음">낮음</option>
+                <option value="중간">중간</option>
+                <option value="높음">높음</option>
+            </select>
+        </section>
+    </main>
+    <section id="result-section">
+        <h2>빠른 페어링 결과</h2>
+        <p id="pairing-result"></p>
+    </section>
+    <script src="script.js"></script>
+</body>
+</html>
