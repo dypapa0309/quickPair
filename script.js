@@ -161,58 +161,102 @@ const pairings = [
     { drinkId: 50, snackId: 50 }
 ];
 
+let lastRecommendation = null;
 
-function recommendPairings() {
-    const drinkType = document.getElementById('drinkType').value;
-    const mood = document.getElementById('mood').value;
-    const weather = document.getElementById('weather').value;
-    const season = document.getElementById('season').value;
-    const timeOfDay = document.getElementById('timeOfDay').value;
-    const event = document.getElementById('event').value;
-    const alcoholPreference = document.getElementById('alcoholPreference').value;
+function calculateScore(drink, snack, criteria) {
+    if (drink.type !== criteria.type) return 0;
 
-    console.log('조건:', drinkType, mood, weather, season, timeOfDay, event, alcoholPreference);
+    let score = 0;
+    const weights = {
+        mood: 2.5,
+        weather: 1.5,
+        season: 2,
+        timeOfDay: 1.5,
+        event: 2,
+        alcoholPreference: 1.5
+    };
 
-    const filteredPairings = pairings.filter(pairing => {
-        const drink = drinks.find(d => d.id === pairing.drinkId);
-        const snack = snacks.find(s => s.id === pairing.snackId);
+    for (let criterion in weights) {
+        if (criteria[criterion]) {
+            if (drink[criterion] === criteria[criterion]) score += weights[criterion];
+            if (snack[criterion] === criteria[criterion]) score += weights[criterion] / 2;
+        }
+    }
 
-        let score = 0;
-        const totalCriteria = 7; // 총 조건 수
+    // 추가: flavor, texture 등의 특성도 점수에 반영
+    if (drink.flavor === snack.flavor) score += 1;
+    if (drink.texture === snack.texture) score += 1;
 
-        if (drink.type === drinkType) score += 2; // 술 종류에 더 높은 가중치
-        if (!mood || drink.mood === mood || snack.mood === mood) score++;
-        if (!weather || drink.weather === weather || snack.weather === weather) score++;
-        if (!season || drink.season === season || snack.season === season) score++;
-        if (!timeOfDay || drink.timeOfDay === timeOfDay || snack.timeOfDay === timeOfDay) score++;
-        if (!event || drink.event === event || snack.event === event) score++;
-        if (!alcoholPreference || drink.alcoholPreference === alcoholPreference) score++;
-
-        // 40% 이상의 조건을 만족하면 추천 (더 유연하게 변경)
-        return score >= totalCriteria * 0.4;
-    });
-
-    console.log('필터링된 페어링 수:', filteredPairings.length);
-
-    displayPairing(filteredPairings);
+    return score;
 }
 
-function displayPairing(pairings) {
-    const pairingResult = document.getElementById('pairing-result');
+function recommendPairings() {
+    const criteria = {
+        type: document.getElementById('drinkType').value,
+        mood: document.getElementById('mood').value,
+        weather: document.getElementById('weather').value,
+        season: document.getElementById('season').value,
+        timeOfDay: document.getElementById('timeOfDay').value,
+        event: document.getElementById('event').value,
+        alcoholPreference: document.getElementById('alcoholPreference').value
+    };
 
-    if (pairings.length === 0) {
+    console.log('선택된 조건:', criteria);
+
+    const scoredPairings = pairings.map(pairing => {
+        const drink = drinks.find(d => d.id === pairing.drinkId);
+        const snack = snacks.find(s => s.id === pairing.snackId);
+        const score = calculateScore(drink, snack, criteria);
+        return { drink, snack, score };
+    }).filter(item => item.score > 0);
+
+    scoredPairings.sort((a, b) => b.score - a.score);
+
+    console.log('필터링된 페어링 수:', scoredPairings.length);
+
+    // 최고 점수의 페어링들 중에서 선택
+    const topScore = scoredPairings[0]?.score;
+    const topPairings = scoredPairings.filter(p => p.score >= topScore * 0.9);  // 최고 점수의 90% 이상인 페어링들 선택
+
+    // 이전 추천과 다른 페어링 선택
+    let selectedPairing;
+    do {
+        selectedPairing = topPairings[Math.floor(Math.random() * topPairings.length)];
+    } while (lastRecommendation && 
+             lastRecommendation.drink.id === selectedPairing.drink.id && 
+             lastRecommendation.snack.id === selectedPairing.snack.id && 
+             topPairings.length > 1);
+
+    lastRecommendation = selectedPairing;
+
+    displayPairing(selectedPairing);
+}
+
+function displayPairing(pairing) {
+    const pairingResult = document.getElementById('pairing-result');
+    pairingResult.innerHTML = '';
+
+    if (!pairing) {
         pairingResult.textContent = '조건에 맞는 페어링을 찾을 수 없습니다. 다른 조건을 선택해 보세요.';
     } else {
-        // 무작위로 하나의 페어링 선택
-        const randomPairing = pairings[Math.floor(Math.random() * pairings.length)];
-        const drink = drinks.find(d => d.id === randomPairing.drinkId);
-        const snack = snacks.find(s => s.id === randomPairing.snackId);
-
-        pairingResult.textContent = `${drink.name}와 ${snack.name}의 페어링을 추천합니다!`;
+        const { drink, snack } = pairing;
+        pairingResult.innerHTML = `
+            <h3>${drink.name}와 ${snack.name}의 페어링을 추천합니다!</h3>
+            <p><strong>술:</strong> ${drink.flavor}, ${drink.aroma}, ${drink.texture}</p>
+            <p><strong>안주:</strong> ${snack.flavor}, ${snack.texture}, 추천 소스: ${snack.recommendedSauce}</p>
+            <div class="feedback-buttons">
+                <button onclick="provideFeedback(${drink.id}, ${snack.id}, true)">👍 좋아요</button>
+                <button onclick="provideFeedback(${drink.id}, ${snack.id}, false)">👎 별로예요</button>
+            </div>
+        `;
     }
 }
 
-// 페이지 로드 시 이벤트 리스너 추가
+function provideFeedback(drinkId, snackId, isPositive) {
+    console.log('사용자 피드백:', { drinkId, snackId, isPositive });
+    alert(isPositive ? '좋아요 피드백을 주셔서 감사합니다!' : '의견 주셔서 감사합니다. 더 나은 추천을 위해 노력하겠습니다.');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('button').addEventListener('click', recommendPairings);
 });
