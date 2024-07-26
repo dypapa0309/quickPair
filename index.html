@@ -4,125 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스</title>
-    <meta name="description" content="QuickPair에서 당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
-    <meta name="keywords" content="QuickPair, 술, 안주, 페어링, 소주, 맥주, 와인, 위스키, 칵테일">
-    <link rel="stylesheet" href="styles.css">
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.quickpair.com/">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="QuickPair는 당신의 완벽한 술과 안주 조합을 찾아드립니다.">
+    <meta name="keywords" content="술, 안주, 페어링, 추천, QuickPair">
+    <meta name="author" content="QuickPair">
+    
+    <!-- Open Graph Meta Tags for Social Media -->
     <meta property="og:title" content="QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스">
-    <meta property="og:description" content="당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
-    <meta property="og:image" content="https://www.quickpair.com/og-image.jpg">
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.quickpair.com/">
-    <meta property="twitter:title" content="QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스">
-    <meta property="twitter:description" content="당신의 기분, 날씨, 상황에 맞는 완벽한 술과 안주 조합을 빠르게 찾아보세요.">
-    <meta property="twitter:image" content="https://www.quickpair.com/twitter-image.jpg">
+    <meta property="og:description" content="QuickPair는 당신의 완벽한 술과 안주 조합을 찾아드립니다.">
+    <meta property="og:image" content="URL_TO_IMAGE">
+    <meta property="og:url" content="https://easypair.netlify.app/">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="QuickPair - 빠르고 쉬운 술과 안주 페어링 서비스">
+    <meta name="twitter:description" content="QuickPair는 당신의 완벽한 술과 안주 조합을 찾아드립니다.">
+    <meta name="twitter:image" content="URL_TO_IMAGE">
+    <meta name="twitter:site" content="@YOUR_TWITTER_HANDLE">
+    
+    <!-- Search Engine Verification -->
+    <meta name="google-site-verification" content="<meta name="google-site-verification" content="2Ty8rFRVnpPuNKFrt7b8DAno9v7kEe1f7Pnr9_bRcsU" />">
+    <meta name="naver-site-verification" content="<meta name="naver-site-verification" content="5ec309c5270225a8910d09d74949c679d37a7d00" />">
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script>
+        Kakao.init('9b58a91619a16f2c51f4b6d5f39cd48d');  <!-- 실제 앱 키로 대체 -->
+        if (!Kakao.isInitialized()) {
+            alert('카카오 SDK 초기화에 실패했습니다. 앱 키를 확인해주세요.');
+        }
+    </script>
 </head>
 <body>
-    <header>
-        <h1>QuickPair</h1>
-    </header>
-    <main>
-        <section id="input-section-1">
-            <label for="drinkType">술 종류:</label>
-            <select id="drinkType" name="drinkType">
-                <option value="소주">소주</option>
-                <option value="맥주">맥주</option>
-                <option value="와인">와인</option>
-                <option value="위스키">위스키</option>
-                <option value="칵테일">칵테일</option>
-                <option value="양주">양주</option>
-                <option value="사케">사케</option>
-            </select>
-        </section>
+    <div id="app-container">
+        <div id="splash-screen">
+            <h1>QuickPair</h1>
+            <p>당신의 완벽한 술과 안주 조합을 찾아드립니다.</p>
+            <button id="start-button">시작하기</button>
+        </div>
 
-        <section id="input-section-2">
-            <label for="mood">기분:</label>
-            <select id="mood" name="mood">
-                <option value="">선택하세요</option>
-                <option value="행복할 때">행복할 때</option>
-                <option value="슬플 때">슬플 때</option>
-                <option value="스트레스 받을 때">스트레스 받을 때</option>
-                <option value="기분 업할 때">기분 업할 때</option>
-                <option value="편안할 때">편안할 때</option>
-                <option value="피곤할 때">피곤할 때</option>
-                <option value="로맨틱할 때">로맨틱할 때</option>
-            </select>
-        </section>
+        <div id="main-content" class="hidden">
+            <header>
+                <h1>QuickPair</h1>
+                <p>Popular</p>
+            </header>
+            <nav class="category-list">
+                <div class="category-item" id="drink-type">
+                    <div class="category-header">
+                        <span>술 종류</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="소주">소주</button></li>
+                        <li><button class="option-btn" data-value="맥주">맥주</button></li>
+                        <li><button class="option-btn" data-value="와인">와인</button></li>
+                        <li><button class="option-btn" data-value="위스키">위스키</button></li>
+                        <li><button class="option-btn" data-value="칵테일">칵테일</button></li>
+                        <li><button class="option-btn" data-value="양주">양주</button></li>
+                        <li><button class="option-btn" data-value="사케">사케</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="mood">
+                    <div class="category-header">
+                        <span>기분</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="행복할 때">행복할 때</button></li>
+                        <li><button class="option-btn" data-value="슬플 때">슬플 때</button></li>
+                        <li><button class="option-btn" data-value="스트레스 받을 때">스트레스 받을 때</button></li>
+                        <li><button class="option-btn" data-value="기분 업할 때">기분 업할 때</button></li>
+                        <li><button class="option-btn" data-value="편안할 때">편안할 때</button></li>
+                        <li><button class="option-btn" data-value="피곤할 때">피곤할 때</button></li>
+                        <li><button class="option-btn" data-value="로맨틱할 때">로맨틱할 때</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="weather">
+                    <div class="category-header">
+                        <span>날씨</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="맑음">맑음</button></li>
+                        <li><button class="option-btn" data-value="흐림">흐림</button></li>
+                        <li><button class="option-btn" data-value="비 오는 날">비 오는 날</button></li>
+                        <li><button class="option-btn" data-value="눈 오는 날">눈 오는 날</button></li>
+                        <li><button class="option-btn" data-value="더운 날">더운 날</button></li>
+                        <li><button class="option-btn" data-value="추운 날">추운 날</button></li>
+                        <li><button class="option-btn" data-value="바람이 부는 날">바람이 부는 날</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="season">
+                    <div class="category-header">
+                        <span>계절</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="봄">봄</button></li>
+                        <li><button class="option-btn" data-value="여름">여름</button></li>
+                        <li><button class="option-btn" data-value="가을">가을</button></li>
+                        <li><button class="option-btn" data-value="겨울">겨울</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="time-of-day">
+                    <div class="category-header">
+                        <span>시간대</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="아침">아침</button></li>
+                        <li><button class="option-btn" data-value="점심">점심</button></li>
+                        <li><button class="option-btn" data-value="저녁">저녁</button></li>
+                        <li><button class="option-btn" data-value="늦은 밤">늦은 밤</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="event">
+                    <div class="category-header">
+                        <span>이벤트/상황</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="파티">파티</button></li>
+                        <li><button class="option-btn" data-value="피크닉">피크닉</button></li>
+                        <li><button class="option-btn" data-value="데이트">데이트</button></li>
+                        <li><button class="option-btn" data-value="가족 모임">가족 모임</button></li>
+                        <li><button class="option-btn" data-value="혼자 있을 때">혼자 있을 때</button></li>
+                        <li><button class="option-btn" data-value="친구와 함께 있을 때">친구와 함께 있을 때</button></li>
+                    </ul>
+                </div>
+                <div class="category-item" id="alcohol-preference">
+                    <div class="category-header">
+                        <span>알코올 농도</span>
+                        <i class="arrow-down"></i>
+                    </div>
+                    <ul class="option-list hidden">
+                        <li><button class="option-btn" data-value="낮음">낮음</button></li>
+                        <li><button class="option-btn" data-value="중간">중간</button></li>
+                        <li><button class="option-btn" data-value="높음">높음</button></li>
+                    </ul>
+                </div>
+            </nav>
+            <button id="get-pairing" class="primary-button">페어링 추천받기</button>
+        </div>
 
-        <section id="input-section-3">
-            <label for="weather">날씨:</label>
-            <select id="weather" name="weather">
-                <option value="">선택하세요</option>
-                <option value="맑음">맑음</option>
-                <option value="흐림">흐림</option>
-                <option value="비 오는 날">비 오는 날</option>
-                <option value="눈 오는 날">눈 오는 날</option>
-                <option value="더운 날">더운 날</option>
-                <option value="추운 날">추운 날</option>
-                <option value="바람이 부는 날">바람이 부는 날</option>
-            </select>
-        </section>
-
-        <section id="input-section-4">
-            <label for="season">계절:</label>
-            <select id="season" name="season">
-                <option value="">선택하세요</option>
-                <option value="봄">봄</option>
-                <option value="여름">여름</option>
-                <option value="가을">가을</option>
-                <option value="겨울">겨울</option>
-            </select>
-        </section>
-
-        <section id="input-section-5">
-            <button type="button" onclick="recommendPairings()">빠른 추천 받기</button>
-        </section>
-
-        <section id="input-section-6">
-            <label for="timeOfDay">시간대:</label>
-            <select id="timeOfDay" name="timeOfDay">
-                <option value="">선택하세요</option>
-                <option value="아침">아침</option>
-                <option value="점심">점심</option>
-                <option value="저녁">저녁</option>
-                <option value="늦은 밤">늦은 밤</option>
-            </select>
-        </section>
-
-        <section id="input-section-7">
-            <label for="event">이벤트/상황:</label>
-            <select id="event" name="event">
-                <option value="">선택하세요</option>
-                <option value="파티">파티</option>
-                <option value="피크닉">피크닉</option>
-                <option value="데이트">데이트</option>
-                <option value="가족 모임">가족 모임</option>
-                <option value="혼자 있을 때">혼자 있을 때</option>
-                <option value="친구와 함께 있을 때">친구와 함께 있을 때</option>
-            </select>
-        </section>
-
-        <section id="input-section-8">
-            <textarea id="whisper" name="whisper" rows="4" cols="50" placeholder="여기에 귓속말을 입력하세요"></textarea>
-        </section>
-
-        <section id="input-section-9">
-            <label for="alcoholPreference">알코올 농도 선호:</label>
-            <select id="alcoholPreference" name="alcoholPreference">
-                <option value="">선택하세요</option>
-                <option value="낮음">낮음</option>
-                <option value="중간">중간</option>
-                <option value="높음">높음</option>
-            </select>
-        </section>
-    </main>
-    <section id="result-section">
-        <h2>빠른 페어링 결과</h2>
-        <p id="pairing-result"></p>
-    </section>
+        <div id="result-popup" class="popup hidden">
+            <div class="popup-content">
+                <h2>추천 페어링</h2>
+                <p id="pairing-result"></p>
+                <div class="share-buttons">
+                    <button id="share-friend">친구에게 공유하기</button>
+                    <button id="share-kakao">카카오톡으로 공유하기</button>
+                </div>
+                <button id="close-popup" class="secondary-button">닫기</button>
+            </div>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

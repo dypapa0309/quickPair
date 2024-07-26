@@ -161,7 +161,79 @@ const pairings = [
     { drinkId: 50, snackId: 50 }
 ];
 
+
 let lastRecommendation = null;
+let userSelections = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    document.getElementById('start-button').addEventListener('click', showMainContent);
+    document.getElementById('get-pairing').addEventListener('click', recommendPairings);
+    document.getElementById('close-popup').addEventListener('click', closePopup);
+    document.getElementById('share-friend').addEventListener('click', copyToClipboard);
+    document.getElementById('share-kakao').addEventListener('click', shareKakao);
+
+    const categoryHeaders = document.querySelectorAll('.category-header');
+    categoryHeaders.forEach(header => {
+        header.addEventListener('click', toggleOptionList);
+    });
+
+    const optionButtons = document.querySelectorAll('.option-btn');
+    optionButtons.forEach(button => {
+        button.addEventListener('click', selectOption);
+    });
+}
+
+function showMainContent() {
+    document.getElementById('splash-screen').classList.add('hidden');
+    document.getElementById('main-content').classList.remove('hidden');
+}
+
+function toggleOptionList(event) {
+    const categoryItem = event.currentTarget.closest('.category-item');
+    const optionList = categoryItem.querySelector('.option-list');
+    const arrowIcon = categoryItem.querySelector('.arrow-down');
+
+    if (optionList.classList.contains('show')) {
+        optionList.classList.remove('show');
+        arrowIcon.classList.remove('rotated');
+    } else {
+        document.querySelectorAll('.option-list').forEach(list => {
+            list.classList.remove('show');
+        });
+        document.querySelectorAll('.arrow-down').forEach(arrow => {
+            arrow.classList.remove('rotated');
+        });
+
+        optionList.classList.add('show');
+        arrowIcon.classList.add('rotated');
+    }
+}
+
+function selectOption(event) {
+    event.stopPropagation();
+    const button = event.target;
+    const categoryItem = button.closest('.category-item');
+    const categoryHeader = categoryItem.querySelector('.category-header span');
+    const value = button.textContent;
+
+    userSelections[categoryItem.id] = value;
+
+    categoryHeader.textContent = value;
+
+    categoryItem.querySelector('.option-list').classList.remove('show');
+    categoryItem.querySelector('.arrow-down').classList.remove('rotated');
+
+    categoryItem.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+
+    console.log(`Selected ${categoryItem.id}: ${value}`);
+}
 
 function calculateScore(drink, snack, criteria) {
     if (drink.type !== criteria.type) return 0;
@@ -183,7 +255,6 @@ function calculateScore(drink, snack, criteria) {
         }
     }
 
-    // 추가: flavor, texture 등의 특성도 점수에 반영
     if (drink.flavor === snack.flavor) score += 1;
     if (drink.texture === snack.texture) score += 1;
 
@@ -192,16 +263,14 @@ function calculateScore(drink, snack, criteria) {
 
 function recommendPairings() {
     const criteria = {
-        type: document.getElementById('drinkType').value,
-        mood: document.getElementById('mood').value,
-        weather: document.getElementById('weather').value,
-        season: document.getElementById('season').value,
-        timeOfDay: document.getElementById('timeOfDay').value,
-        event: document.getElementById('event').value,
-        alcoholPreference: document.getElementById('alcoholPreference').value
+        type: userSelections['drink-type'],
+        mood: userSelections['mood'],
+        weather: userSelections['weather'],
+        season: userSelections['season'],
+        timeOfDay: userSelections['time-of-day'],
+        event: userSelections['event'],
+        alcoholPreference: userSelections['alcohol-preference']
     };
-
-    console.log('선택된 조건:', criteria);
 
     const scoredPairings = pairings.map(pairing => {
         const drink = drinks.find(d => d.id === pairing.drinkId);
@@ -212,13 +281,9 @@ function recommendPairings() {
 
     scoredPairings.sort((a, b) => b.score - a.score);
 
-    console.log('필터링된 페어링 수:', scoredPairings.length);
-
-    // 최고 점수의 페어링들 중에서 선택
     const topScore = scoredPairings[0]?.score;
-    const topPairings = scoredPairings.filter(p => p.score >= topScore * 0.9);  // 최고 점수의 90% 이상인 페어링들 선택
+    const topPairings = scoredPairings.filter(p => p.score >= topScore * 0.9);
 
-    // 이전 추천과 다른 페어링 선택
     let selectedPairing;
     do {
         selectedPairing = topPairings[Math.floor(Math.random() * topPairings.length)];
@@ -233,30 +298,52 @@ function recommendPairings() {
 }
 
 function displayPairing(pairing) {
+    const resultPopup = document.getElementById('result-popup');
     const pairingResult = document.getElementById('pairing-result');
-    pairingResult.innerHTML = '';
 
     if (!pairing) {
-        pairingResult.textContent = '조건에 맞는 페어링을 찾을 수 없습니다. 다른 조건을 선택해 보세요.';
+        pairingResult.textContent = '추천 페어링을 찾을 수 없습니다. 다른 조건을 선택해 보세요.';
     } else {
         const { drink, snack } = pairing;
         pairingResult.innerHTML = `
-            <h3>${drink.name}와 ${snack.name}의 페어링을 추천합니다!</h3>
+            <h3>${drink.name}와 ${snack.name}</h3>
             <p><strong>술:</strong> ${drink.flavor}, ${drink.aroma}, ${drink.texture}</p>
             <p><strong>안주:</strong> ${snack.flavor}, ${snack.texture}, 추천 소스: ${snack.recommendedSauce}</p>
-            <div class="feedback-buttons">
-                <button onclick="provideFeedback(${drink.id}, ${snack.id}, true)">👍 좋아요</button>
-                <button onclick="provideFeedback(${drink.id}, ${snack.id}, false)">👎 별로예요</button>
-            </div>
         `;
     }
+
+    resultPopup.classList.remove('hidden');
 }
 
-function provideFeedback(drinkId, snackId, isPositive) {
-    console.log('사용자 피드백:', { drinkId, snackId, isPositive });
-    alert(isPositive ? '좋아요 피드백을 주셔서 감사합니다!' : '의견 주셔서 감사합니다. 더 나은 추천을 위해 노력하겠습니다.');
+function closePopup() {
+    document.getElementById('result-popup').classList.add('hidden');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('button').addEventListener('click', recommendPairings);
-});
+function copyToClipboard() {
+    const pairingText = document.getElementById('pairing-result').innerText;
+    const textarea = document.createElement('textarea');
+    textarea.value = pairingText;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert('추천 페어링이 클립보드에 복사되었습니다.');
+}
+
+function shareKakao() {
+    if (typeof Kakao === 'undefined') {
+        alert('카카오톡 SDK가 로드되지 않았습니다.');
+        return;
+    }
+
+    const pairingText = document.getElementById('pairing-result').innerText;
+
+    Kakao.Link.sendDefault({
+        objectType: 'text',
+        text: `QuickPair 추천: ${pairingText}`,
+        link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href,
+        },
+    });
+}
