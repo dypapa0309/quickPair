@@ -338,12 +338,11 @@ function shareKakao() {
 
     const pairingText = document.getElementById('pairing-result').innerText;
 
-    Kakao.Link.sendDefault({
-        objectType: 'text',
-        text: `QuickPair 추천: ${pairingText}`,
-        link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
-        },
-    });
-}
+Kakao.Link.sendDefault({
+    objectType: 'text',
+    text: `QuickPair 추천: ${pairingText}`,
+    link: {
+        mobileWebUrl: 'https://quickpair.site',
+        webUrl: 'https://quickpair.site',
+    },
+});
